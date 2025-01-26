@@ -59,11 +59,24 @@ module "alb" {
   lb_listner_protocol       = "HTTP"
   lb_listner_default_action = "forward"
 
+
   # Dummy values for missing arguments
   lb_https_listner_port           = 443
   lb_https_listner_protocol       = "HTTPS"
-  dev_proj_1_acm_arn              = "" # Empty string or any dummy value
-  lb_target_group_attachment_port = 8080
+  dev_proj_1_acm_arn              = ""   # Empty string or placeholder value
+  lb_target_group_attachment_port = 5000 # Corrected to remove duplication
+}
+
+
+module "rds_db_instance" {
+  source               = "./rds"
+  db_subnet_group_name = "dev_proj_1_rds_subnet_group"
+  subnet_groups        = tolist(module.networking.dev_proj_1_public_subnets)
+  rds_mysql_sg_id      = module.security_group.rds_mysql_sg_id
+  mysql_db_identifier  = "mydb"
+  mysql_username       = "dbuser"
+  mysql_password       = "dbpassword"
+  mysql_dbname         = "devprojdb"
 }
 
 

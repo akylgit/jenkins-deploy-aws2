@@ -1,5 +1,8 @@
 # Local .terraform directories
 **/.terraform/*
+**/certificate-manager/*
+**/hosted-zone/*
+**/jenkins-runner-script/*
 
 # .tfstate files
 *.tfstate
