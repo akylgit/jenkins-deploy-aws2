@@ -1,0 +1,4 @@
+#hosted-zone/
+#certificate-manager/
+#jenkins-runner-script/
+#.terraform/
