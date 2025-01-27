@@ -18,16 +18,10 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                script {
-                    // Directly set AWS environment variables (replace with your actual AWS keys)
-                    withEnv([
-                        "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
-                        "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                    ]) {
-                        dir('infra') {
-                            sh 'echo "=================Terraform Init=================="'
-                            sh 'terraform init'
-                        }
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'user_devops']]) {
+                    dir('infra') {
+                        sh 'echo "=================Terraform Init=================="'
+                        sh 'terraform init'
                     }
                 }
             }
@@ -37,9 +31,11 @@ pipeline {
             steps {
                 script {
                     if (params.PLAN_TERRAFORM) {
-                        dir('infra') {
-                            sh 'echo "=================Terraform Plan=================="'
-                            sh 'terraform plan'
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'user_devops']]) {
+                            dir('infra') {
+                                sh 'echo "=================Terraform Plan=================="'
+                                sh 'terraform plan'
+                            }
                         }
                     }
                 }
@@ -50,9 +46,11 @@ pipeline {
             steps {
                 script {
                     if (params.APPLY_TERRAFORM) {
-                        dir('infra') {
-                            sh 'echo "=================Terraform Apply=================="'
-                            sh 'terraform apply -auto-approve'
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'user_devops']]) {
+                            dir('infra') {
+                                sh 'echo "=================Terraform Apply=================="'
+                                sh 'terraform apply -auto-approve'
+                            }
                         }
                     }
                 }
@@ -63,9 +61,11 @@ pipeline {
             steps {
                 script {
                     if (params.DESTROY_TERRAFORM) {
-                        dir('infra') {
-                            sh 'echo "=================Terraform Destroy=================="'
-                            sh 'terraform destroy -auto-approve'
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials-devops']]) {
+                            dir('infra') {
+                                sh 'echo "=================Terraform Destroy=================="'
+                                sh 'terraform destroy -auto-approve'
+                            }
                         }
                     }
                 }
