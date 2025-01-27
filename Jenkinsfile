@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -10,7 +11,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                deleteDir()  // Clean workspace before cloning
+                deleteDir()
                 git branch: 'main', url: 'https://github.com/akylgit/jenkins-deploy-aws2.git'
                 sh "ls -lart"
             }
@@ -57,6 +58,7 @@ pipeline {
             }
         }
 
+        /*
         stage('Terraform Destroy') {
             steps {
                 script {
@@ -71,5 +73,6 @@ pipeline {
                 }
             }
         }
+        */
     }
 }
