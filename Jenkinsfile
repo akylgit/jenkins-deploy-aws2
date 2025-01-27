@@ -58,7 +58,7 @@ pipeline {
         }
 
         stage('Terraform Destroy') {
-            steps {_credentials_devops1
+            steps {
                 script {
                     if (params.DESTROY_TERRAFORM) {
                         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials_devops1']]) {
