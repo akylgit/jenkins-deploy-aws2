@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -11,7 +10,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                deleteDir()
+                deleteDir()  // Clean workspace before cloning
                 git branch: 'main', url: 'https://github.com/akylgit/jenkins-deploy-aws2.git'
                 sh "ls -lart"
             }
@@ -19,10 +18,16 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials_devops1']]) {
-                    dir('infra') {
-                        sh 'echo "=================Terraform Init=================="'
-                        sh 'terraform init'
+                script {
+                    // Directly set AWS environment variables (replace with your actual AWS keys)
+                    withEnv([
+                        "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
+                        "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+                    ]) {
+                        dir('infra') {
+                            sh 'echo "=================Terraform Init=================="'
+                            sh 'terraform init'
+                        }
                     }
                 }
             }
@@ -32,11 +37,9 @@ pipeline {
             steps {
                 script {
                     if (params.PLAN_TERRAFORM) {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials_devops1']]) {
-                            dir('infra') {
-                                sh 'echo "=================Terraform Plan=================="'
-                                sh 'terraform plan'
-                            }
+                        dir('infra') {
+                            sh 'echo "=================Terraform Plan=================="'
+                            sh 'terraform plan'
                         }
                     }
                 }
@@ -47,32 +50,26 @@ pipeline {
             steps {
                 script {
                     if (params.APPLY_TERRAFORM) {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials_devops1']]) {
-                            dir('infra') {
-                                sh 'echo "=================Terraform Apply=================="'
-                                sh 'terraform apply -auto-approve'
-                            }
+                        dir('infra') {
+                            sh 'echo "=================Terraform Apply=================="'
+                            sh 'terraform apply -auto-approve'
                         }
                     }
                 }
             }
         }
 
-        /*
-        stage('Terraform Destroy') {
+        /*stage('Terraform Destroy') {
             steps {
                 script {
                     if (params.DESTROY_TERRAFORM) {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws_credentials_devops1']]) {
-                            dir('infra') {
-                                sh 'echo "=================Terraform Destroy=================="'
-                                sh 'terraform destroy -auto-approve'
-                            }
+                        dir('infra') {
+                            sh 'echo "=================Terraform Destroy=================="'
+                            sh 'terraform destroy -auto-approve'
                         }
                     }
                 }
             }
-        }
-        */
+        }*/
     }
 }
