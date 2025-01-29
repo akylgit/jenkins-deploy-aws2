@@ -1,13 +1,13 @@
 pipeline {
     agent any
 
-    environment {
-        AWS_DEFAULT_REGION = "us-east-1"
-    }
-
     parameters {
         booleanParam(name: 'PLAN_TERRAFORM', defaultValue: false, description: 'Check to plan Terraform changes')
         booleanParam(name: 'APPLY_TERRAFORM', defaultValue: false, description: 'Check to apply Terraform changes')
+    }
+
+    environment {
+        AWS_DEFAULT_REGION = "us-east-1"
     }
 
     stages {
@@ -64,14 +64,15 @@ pipeline {
                     }
                 }
             }
-        
-        /*stage('Terraform Destroy') {  // Added Destroy Stage
+        }
+
+        stage('Terraform Destroy') {
             steps {
                 script {
                     if (params.DESTROY_TERRAFORM) {
                         withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
                                              secretKeyVariable: 'AWS_SECRET_ACCESS_KEY', 
-                                             credentialsId: 'user_devops')]) {
+                                             credentialsId: '116981784898')]) {
                             dir('infra') {
                                 sh 'echo "=================Terraform Destroy=================="'
                                 sh 'terraform destroy -auto-approve'
@@ -80,6 +81,6 @@ pipeline {
                     }
                 }
             }
-        }*/
+        }
     }
 }
