@@ -64,6 +64,22 @@ pipeline {
                     }
                 }
             }
-        }
+        
+        /* stage('Terraform Destroy') {  // Added Destroy Stage
+            steps {
+                script {
+                    if (params.DESTROY_TERRAFORM) {
+                        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY', 
+                                             credentialsId: 'user_devops')]) {
+                            dir('infra') {
+                                sh 'echo "=================Terraform Destroy=================="'
+                                sh 'terraform destroy -auto-approve'
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
     }
 }
