@@ -65,7 +65,7 @@ pipeline {
                 }
             }
         
-        /* stage('Terraform Destroy') {  // Added Destroy Stage
+        /*stage('Terraform Destroy') {  // Added Destroy Stage
             steps {
                 script {
                     if (params.DESTROY_TERRAFORM) {
