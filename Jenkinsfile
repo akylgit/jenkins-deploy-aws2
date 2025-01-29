@@ -1,10 +1,13 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_DEFAULT_REGION = "us-east-1"
+    }
+
     parameters {
         booleanParam(name: 'PLAN_TERRAFORM', defaultValue: false, description: 'Check to plan Terraform changes')
         booleanParam(name: 'APPLY_TERRAFORM', defaultValue: false, description: 'Check to apply Terraform changes')
-        /*booleanParam(name: 'DESTROY_TERRAFORM', defaultValue: false, description: 'Check to destroy Terraform changes')*/
     }
 
     stages {
@@ -18,7 +21,9 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'user_devops']]) {
+                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY', 
+                                     credentialsId: '116981784898')]) {
                     dir('infra') {
                         sh 'echo "=================Terraform Init=================="'
                         sh 'terraform init'
@@ -31,7 +36,9 @@ pipeline {
             steps {
                 script {
                     if (params.PLAN_TERRAFORM) {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'user_devops']]) {
+                        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY', 
+                                             credentialsId: '116981784898')]) {
                             dir('infra') {
                                 sh 'echo "=================Terraform Plan=================="'
                                 sh 'terraform plan'
@@ -46,7 +53,9 @@ pipeline {
             steps {
                 script {
                     if (params.APPLY_TERRAFORM) {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'user_devops']]) {
+                        withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                             secretKeyVariable: 'AWS_SECRET_ACCESS_KEY', 
+                                             credentialsId: '116981784898')]) {
                             dir('infra') {
                                 sh 'echo "=================Terraform Apply=================="'
                                 sh 'terraform apply -auto-approve'
@@ -56,20 +65,5 @@ pipeline {
                 }
             }
         }
-
-        /*stage('Terraform Destroy') {
-            steps {
-                script {
-                    if (params.DESTROY_TERRAFORM) {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials-devops']]) {
-                            dir('infra') {
-                                sh 'echo "=================Terraform Destroy=================="'
-                                sh 'terraform destroy -auto-approve'
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
     }
 }
